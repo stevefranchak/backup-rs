@@ -15,6 +15,14 @@ impl Args {
     pub fn should_show_help(&self) -> bool {
         self.show_help
     }
+
+    pub fn has_invalid_option(&self) -> bool {
+        self.invalid_option.is_some()
+    }
+
+    pub fn get_invalid_option(&self) -> &String {
+        &self.invalid_option.as_ref().unwrap()
+    }
 }
 
 fn init() -> Args {
@@ -54,8 +62,8 @@ pub fn get() -> Result<Args, String> {
         }
     }
 
-    if !parsed_args.should_show_help() && parsed_args.invalid_option.is_some() {
-        return Err(format!("unrecognized option '{}'", parsed_args.invalid_option.as_ref().unwrap()));
+    if !parsed_args.should_show_help() && parsed_args.has_invalid_option() {
+        return Err(format!("unrecognized option '{}'", parsed_args.get_invalid_option()));
     }
 
     // Expecting the filepath operand at this point
