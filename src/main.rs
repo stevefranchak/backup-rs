@@ -1,3 +1,5 @@
+extern crate regex;
+
 // NOTE: Not using https://github.com/kbknapp/clap-rs because this is a learning-the-language project
 mod args;
 
