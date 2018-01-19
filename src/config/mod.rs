@@ -1,6 +1,6 @@
-mod parse;
+mod cmd_line_parse;
 
-use self::parse::{Argument, parse_command_line_arguments};
+use self::cmd_line_parse::{Argument, parse_command_line_arguments};
 
 #[derive(Debug)]
 pub struct Config {
@@ -57,7 +57,7 @@ pub fn get() -> Result<Config, String> {
     let mut operands: Vec<&String> = Vec::new();
 
     while let Some(arg) = args_list.next() {
-        use self::parse::Argument::*;
+        use self::cmd_line_parse::Argument::*;
         match arg {
             &ShortOpt(ref name) => {
                 match name.as_str() {
@@ -81,7 +81,7 @@ pub fn get() -> Result<Config, String> {
 
     // If there is an invalid option present and --help is not present, err
     if !config.should_show_help() && invalid_option.is_some() {
-        use self::parse::Argument::*;
+        use self::cmd_line_parse::Argument::*;
         match invalid_option.unwrap() {
             &ShortOpt(ref name) => return Err(format!("invalid option -- {}", name)),
             &LongOpt(ref name, _) => return Err(format!("unrecognized option '{}'", name)),
