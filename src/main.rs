@@ -42,14 +42,14 @@ fn get_args_or_exit() -> args::Args {
 
 // Help message is loosely modeled after "cp --help"
 fn print_help_and_exit() {
-    println!("Usage: {PROG_NAME} FILE_TO_BACKUP
+    println!("Usage: {PROG_NAME} [OPTION]... FILE_TO_BACKUP
 
 Puts a copy of FILE_TO_BACKUP in the same directory as the original file.
 If this is the only copy, this copy's filename has \".bak\" appended to it.
 If other copies exist, this copy's filename has \".bak.n\" appended to it, where
 n is the (nth - 1) copy. For example, if a copy of a.txt is being made and a.txt.bak
 exists, then this copy is written to a.txt.bak.1.",
-    PROG_NAME=PROG_NAME);
+    PROG_NAME = PROG_NAME);
     process::exit(SUCCESS_EXIT_CODE);
 }
 
