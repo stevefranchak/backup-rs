@@ -3,5 +3,13 @@ name = "backup"
 version = "0.1.0"
 authors = ["binaryadder"]
 
+[profile.release]
+lto = true
+panic = 'abort'
+opt-level = 3
+debug = false
+rpath = false
+debug-assertions = false
+
 [dependencies]
 regex = "0.2"
