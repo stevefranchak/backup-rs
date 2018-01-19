@@ -1,15 +1,15 @@
 mod parse;
 
-use self::parse::Argument;
+use self::parse::{Argument, parse_command_line_arguments};
 
 #[derive(Debug)]
-pub struct Args {
+pub struct Config {
     filename: String,
     show_help: bool,
     truncate: bool,
 }
 
-impl Args {
+impl Config {
     pub fn get_filename(&self) -> &String {
         &self.filename
     }
@@ -35,8 +35,8 @@ impl Args {
         self.truncate = should_truncate;
     }
 
-    pub fn new() -> Args {
-        Args {
+    pub fn new() -> Config {
+        Config {
             filename: String::new(),
             show_help: false,
             truncate: false,
@@ -45,9 +45,9 @@ impl Args {
 
 }
 
-pub fn get() -> Result<Args, String> {
-    let args_list = parse::parse_command_line_arguments();
-    let mut parsed_args = Args::new();
+pub fn get() -> Result<Config, String> {
+    let args_list = parse_command_line_arguments();
+    let mut config = Config::new();
 
     let mut invalid_option: Option<&Argument> = None;
     // Sadly, the operands vector is required since the program does not know in advance whether
@@ -61,14 +61,14 @@ pub fn get() -> Result<Args, String> {
         match arg {
             &ShortOpt(ref name) => {
                 match name.as_str() {
-                    "t" => parsed_args.set_should_truncate(true),
+                    "t" => config.set_should_truncate(true),
                     _ => set_invalid_option(&mut invalid_option, Some(arg)),
                 }
             }
             &LongOpt(ref name, _) => {
                 match name.as_str() {
-                    "help" => parsed_args.set_should_show_help(true),
-                    "truncate" => parsed_args.set_should_truncate(true),
+                    "help" => config.set_should_show_help(true),
+                    "truncate" => config.set_should_truncate(true),
                     _ => set_invalid_option(&mut invalid_option, Some(arg)),
                 }
             }
@@ -80,7 +80,7 @@ pub fn get() -> Result<Args, String> {
     }
 
     // If there is an invalid option present and --help is not present, err
-    if !parsed_args.should_show_help() && invalid_option.is_some() {
+    if !config.should_show_help() && invalid_option.is_some() {
         use self::parse::Argument::*;
         match invalid_option.unwrap() {
             &ShortOpt(ref name) => return Err(format!("invalid option -- {}", name)),
@@ -93,15 +93,15 @@ pub fn get() -> Result<Args, String> {
     // If the operands list is empty, err
     // Extra operands are ignored
     if operands.len() > 0 {
-        parsed_args.set_filename(operands.get(0).unwrap().to_string());
+        config.set_filename(operands.get(0).unwrap().to_string());
     } else {
-        if !parsed_args.should_show_help() {
+        if !config.should_show_help() {
             return Err("missing file operand".to_string());
         }
     }
 
-    //println!("{:?}", parsed_args);
-    Ok(parsed_args)
+    //println!("{:?}", config);
+    Ok(config)
 }
 
 fn set_invalid_option<'a>(invalid_option: &mut Option<&'a Argument>, option_to_set: Option<&'a Argument>) {

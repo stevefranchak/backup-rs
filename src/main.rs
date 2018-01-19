@@ -1,9 +1,10 @@
 extern crate regex;
 
 // NOTE: Not using https://github.com/kbknapp/clap-rs because this is a learning-the-language project
-mod args;
+mod config;
 
 use std::process;
+use config::Config;
 
 const SUCCESS_EXIT_CODE: i32 = 0;
 const INVALID_ARG_EXIT_CODE: i32 = 22;
@@ -11,21 +12,21 @@ const INVALID_ARG_EXIT_CODE: i32 = 22;
 const PROG_NAME: &'static str = "backup";
 
 fn main() {
-    let args = get_args_or_exit();
+    let config = get_config_or_exit();
 
-    // --help trumps any of the other command args
-    if args.should_show_help() {
+    // --help trumps any other configuration fields
+    if config.should_show_help() {
         print_help_and_exit();
     }
 
-    println!("The source filename is: {}", args.get_filename());
+    println!("The source filename is: {}", config.get_filename());
 }
 
-// Returns args::Args if there are no issues parsing or validating command args
+// Returns config::Config if there are no issues parsing or validating command line arguments
 // Else, prints errors to stderr and exits with code EINVAL
-fn get_args_or_exit() -> args::Args {
-    let args: Option<args::Args> = match args::get() {
-        Ok(args) => Some(args),
+fn get_config_or_exit() -> Config {
+    let config: Option<Config> = match config::get() {
+        Ok(config) => Some(config),
         Err(err) => {
             print_prog_error(&err);
             print_try_help_error();
@@ -33,11 +34,11 @@ fn get_args_or_exit() -> args::Args {
         }
     };
 
-    if args.is_none() {
+    if config.is_none() {
         process::exit(INVALID_ARG_EXIT_CODE);
     }
 
-    args.unwrap()
+    config.unwrap()
 }
 
 // Help message is loosely modeled after "cp --help"
